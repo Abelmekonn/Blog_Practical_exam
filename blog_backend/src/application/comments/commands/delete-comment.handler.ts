@@ -1,10 +1,9 @@
-import {
-  Injectable,
-  Inject,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { ICommandHandler } from '../../../core/cqrs/command.base';
+import {
+  CommentNotFoundException,
+  UnauthorizedCommentAccessException,
+} from '../../../core/exceptions';
 import { DeleteCommentCommand } from './delete-comment.command';
 import { COMMENT_REPOSITORY } from '../../../domain/comments/comment.repository.interface';
 import { ICommentRepository } from '../../../domain/comments/comment.repository.interface';
@@ -23,12 +22,12 @@ export class DeleteCommentHandler
 
     const comment = await this.commentRepository.findById(id);
     if (!comment) {
-      throw new NotFoundException(`Comment with ID ${id} not found`);
+      throw new CommentNotFoundException(id);
     }
 
     // Check if user is the author of the comment
     if (comment.author.id !== userId) {
-      throw new ForbiddenException('You can only delete your own comments');
+      throw new UnauthorizedCommentAccessException(id, userId);
     }
 
     await this.commentRepository.delete(id);

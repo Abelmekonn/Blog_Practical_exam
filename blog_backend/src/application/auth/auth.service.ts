@@ -1,10 +1,11 @@
-import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 import { AuthTokens, TokenPayload } from '../../domain/auth/auth.types';
 import { USER_REPOSITORY } from '../../domain/users/user.repository.interface';
 import { IUserRepository } from '../../domain/users/user.repository.interface';
 import { User } from '../../domain/users/user.entity';
+import { UserAlreadyExistsException } from '../../core/exceptions';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
       return null;
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await compare(password, user.password);
     if (!isPasswordValid) {
       return null;
     }
@@ -46,10 +47,10 @@ export class AuthService {
   async register(email: string, password: string, name: string): Promise<User> {
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
-      throw new UnauthorizedException('Email already in use');
+      throw new UserAlreadyExistsException(email);
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hash(password, 10);
 
     return this.userRepository.create({
       email,

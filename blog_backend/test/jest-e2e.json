@@ -4,6 +4,16 @@
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  }
+    "^.+\\.ts$": "ts-jest"
+  },
+  "collectCoverageFrom": [
+    "src/**/*.(t|j)s"
+  ],
+  "coverageDirectory": "../coverage",
+  "moduleNameMapping": {
+    "^src/(.*)$": "<rootDir>/../src/$1"
+  },
+  "testTimeout": 30000,
+  "forceExit": true,
+  "detectOpenHandles": true
 }

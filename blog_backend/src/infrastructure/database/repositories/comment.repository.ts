@@ -22,6 +22,9 @@ export class CommentRepository
   }
 
   async findByAuthorId(authorId: string): Promise<Comment[]> {
-    return this.commentRepository.find({ where: { id: authorId } });
+    return this.commentRepository.find({
+      where: { author: { id: authorId } },
+      relations: ['author', 'post'],
+    });
   }
 }

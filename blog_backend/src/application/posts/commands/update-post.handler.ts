@@ -1,13 +1,12 @@
-import {
-  Injectable,
-  Inject,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { ICommandHandler } from '../../../core/cqrs/command.base';
 import { UpdatePostCommand } from './update-post.command';
 import { POST_REPOSITORY } from '../../../domain/posts/post.repository.interface';
 import { IPostRepository } from '../../../domain/posts/post.repository.interface';
+import {
+  PostNotFoundException,
+  UnauthorizedPostAccessException,
+} from '../../../core/exceptions';
 
 @Injectable()
 export class UpdatePostHandler
@@ -23,12 +22,12 @@ export class UpdatePostHandler
 
     const post = await this.postRepository.findById(id);
     if (!post) {
-      throw new NotFoundException(`Post with ID ${id} not found`);
+      throw new PostNotFoundException(id);
     }
 
     // Check if user is the author of the post
     if (post.author.id !== userId) {
-      throw new ForbiddenException('You can only update your own posts');
+      throw new UnauthorizedPostAccessException(id, userId);
     }
 
     const updateData: any = {};

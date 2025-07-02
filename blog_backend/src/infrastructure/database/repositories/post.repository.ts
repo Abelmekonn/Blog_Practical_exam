@@ -18,7 +18,10 @@ export class PostRepository
   }
 
   async findByAuthorId(authorId: string): Promise<Post[]> {
-    return this.postRepository.find({ where: { id: authorId } });
+    return this.postRepository.find({
+      where: { author: { id: authorId } },
+      relations: ['author'],
+    });
   }
 
   async findWithComments(id: string): Promise<Post | null> {

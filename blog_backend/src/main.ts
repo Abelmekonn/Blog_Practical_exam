@@ -2,10 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { GlobalExceptionFilter } from './core/exceptions/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   // Apply global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
@@ -17,6 +18,9 @@ async function bootstrap() {
       },
     }),
   );
+
+  // Apply global exception filter
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Setup Swagger documentation
   const config = new DocumentBuilder()
@@ -30,7 +34,7 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors();
-  
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
