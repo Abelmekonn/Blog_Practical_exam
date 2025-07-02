@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
+import { AuthenticatedRequest } from '../../types/request.types';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
 
@@ -30,7 +45,10 @@ export class CommentsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createCommentDto: CreateCommentDto, @Request() req) {
+  async create(
+    @Body() createCommentDto: CreateCommentDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
     const command = new CreateCommentCommand(
       createCommentDto.content,
       createCommentDto.postId,
@@ -41,7 +59,10 @@ export class CommentsController {
   }
 
   @ApiOperation({ summary: 'Get all comments for a post' })
-  @ApiResponse({ status: 200, description: 'Returns all comments for the post' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all comments for the post',
+  })
   @Get('post/:postId')
   async findByPostId(@Param('postId') postId: string) {
     const query = new GetCommentsByPostQuery(postId);
@@ -55,8 +76,8 @@ export class CommentsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const command = new DeleteCommentCommand(id);
+  async remove(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
+    const command = new DeleteCommentCommand(id, req.user.id);
     await this.deleteCommentHandler.execute(command);
     return { message: 'Comment deleted successfully' };
   }

@@ -1,7 +1,7 @@
 import { ICommand } from '../../../core/cqrs/command.base';
 
 export class CreatePostCommand implements ICommand<string> {
-  readonly type = 'CreatePost';
+  readonly _type = 'CreatePost';
   constructor(
     public readonly title: string,
     public readonly content: string,

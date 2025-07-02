@@ -5,7 +5,9 @@ import { COMMENT_REPOSITORY } from '../../../domain/comments/comment.repository.
 import { ICommentRepository } from '../../../domain/comments/comment.repository.interface';
 
 @Injectable()
-export class CreateCommentHandler implements ICommandHandler<CreateCommentCommand, string> {
+export class CreateCommentHandler
+  implements ICommandHandler<CreateCommentCommand, string>
+{
   constructor(
     @Inject(COMMENT_REPOSITORY)
     private readonly commentRepository: ICommentRepository,
@@ -13,11 +15,11 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
 
   async execute(command: CreateCommentCommand): Promise<string> {
     const { content, postId, authorId } = command;
-    
+
     const comment = await this.commentRepository.create({
       content,
-      postId,
-      authorId,
+      post: { id: postId } as any,
+      author: { id: authorId } as any,
     });
 
     return comment.id;

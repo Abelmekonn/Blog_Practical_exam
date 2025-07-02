@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Comment } from '../../../domain/comments/comment.entity';
+import { Comment } from '../entities/comment.orm-entity';
 import { ICommentRepository } from '../../../domain/comments/comment.repository.interface';
 import { BaseRepository } from './base.repository';
 
 @Injectable()
-export class CommentRepository extends BaseRepository<Comment> implements ICommentRepository {
+export class CommentRepository
+  extends BaseRepository<Comment>
+  implements ICommentRepository
+{
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
@@ -19,6 +22,6 @@ export class CommentRepository extends BaseRepository<Comment> implements IComme
   }
 
   async findByAuthorId(authorId: string): Promise<Comment[]> {
-    return this.commentRepository.find({ where: { id:authorId } });
+    return this.commentRepository.find({ where: { id: authorId } });
   }
 }

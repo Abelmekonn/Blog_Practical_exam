@@ -12,7 +12,7 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand, voi
   ) {}
 
   async execute(command: UpdateUserCommand): Promise<void> {
-    const { id, name, email } = command;
+    const { id, username, email } = command;
     
     const user = await this.userRepository.findById(id);
     if (!user) {
@@ -20,7 +20,7 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand, voi
     }
 
     const updateData: any = {};
-    if (name !== undefined) updateData.name = name;
+    if (username !== undefined) updateData.username = username;
     if (email !== undefined) updateData.email = email;
 
     await this.userRepository.update(id, updateData);

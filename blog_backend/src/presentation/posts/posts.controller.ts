@@ -1,5 +1,22 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Query, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
+import { AuthenticatedRequest } from '../../types/request.types';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -37,7 +54,10 @@ export class PostsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createPostDto: CreatePostDto, @Request() req) {
+  async create(
+    @Body() createPostDto: CreatePostDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
     const command = new CreatePostCommand(
       createPostDto.title,
       createPostDto.content,
@@ -59,7 +79,10 @@ export class PostsController {
 
   @ApiOperation({ summary: 'Get a post by ID' })
   @ApiResponse({ status: 200, description: 'Returns the post' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Post not found' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const query = new GetPostQuery(id);
@@ -73,9 +96,14 @@ export class PostsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
     const command = new UpdatePostCommand(
       id,
+      req.user.id,
       updatePostDto.title,
       updatePostDto.content,
       updatePostDto.imageUrl,
@@ -92,8 +120,8 @@ export class PostsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const command = new DeletePostCommand(id);
+  async remove(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
+    const command = new DeletePostCommand(id, req.user.id);
     await this.deletePostHandler.execute(command);
     return { message: 'Post deleted successfully' };
   }

@@ -34,8 +34,12 @@ export class AuthService {
       email: user.email,
     };
 
+    const { password, ...userWithoutPassword } = user;
+
     return {
       accessToken: this.jwtService.sign(payload),
+      user: userWithoutPassword,
+      message: 'Login successful',
     };
   }
 
@@ -46,7 +50,7 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     return this.userRepository.create({
       email,
       password: hashedPassword,

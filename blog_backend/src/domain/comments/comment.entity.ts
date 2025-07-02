@@ -1,9 +1,11 @@
-import { Post } from "../posts/post.entity";
+import { Post } from '../posts/post.entity';
+import { User } from '../users/user.entity';
+
 export class Comment {
   id: string;
   content: string;
-  author: string;
-  post: Post; 
+  author: User;
+  post: Post;
   createdAt: Date;
   updatedAt: Date;
 }

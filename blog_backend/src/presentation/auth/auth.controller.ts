@@ -1,10 +1,22 @@
-import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Get,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from '../../application/auth/auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from '../../auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -12,7 +24,10 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: 'User login' })
-  @ApiResponse({ status: 200, description: 'Returns JWT token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns JWT token with user data and success message',
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @UseGuards(LocalAuthGuard)
   @Post('login')

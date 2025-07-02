@@ -7,15 +7,21 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from '../presentation/auth/auth.controller';
 import { RepositoriesModule } from '../infrastructure/repositories.module';
 import { jwtConfig } from '../config/jwt.config';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { OwnershipGuard } from './guards/ownership.guard';
 
 @Module({
-  imports: [
-    PassportModule,
-    JwtModule.register(jwtConfig),
-    RepositoriesModule,
+  imports: [PassportModule, JwtModule.register(jwtConfig), RepositoriesModule],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    JwtAuthGuard,
+    LocalAuthGuard,
+    OwnershipGuard,
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthService, JwtAuthGuard, LocalAuthGuard, OwnershipGuard],
 })
 export class AuthModule {}

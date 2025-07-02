@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Post } from '../../../domain/posts/post.entity';
+import { Post } from '../entities/post.orm-entity';
 import { IPostRepository } from '../../../domain/posts/post.repository.interface';
 import { BaseRepository } from './base.repository';
 
 @Injectable()
-export class PostRepository extends BaseRepository<Post> implements IPostRepository {
+export class PostRepository
+  extends BaseRepository<Post>
+  implements IPostRepository
+{
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
@@ -15,7 +18,7 @@ export class PostRepository extends BaseRepository<Post> implements IPostReposit
   }
 
   async findByAuthorId(authorId: string): Promise<Post[]> {
-    return this.postRepository.find({ where: { id:authorId } });
+    return this.postRepository.find({ where: { id: authorId } });
   }
 
   async findWithComments(id: string): Promise<Post | null> {

@@ -7,4 +7,12 @@ export interface TokenPayload {
 
 export interface AuthTokens {
   accessToken: string;
+  user: {
+    id: string;
+    email: string;
+    username: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+  message: string;
 }
