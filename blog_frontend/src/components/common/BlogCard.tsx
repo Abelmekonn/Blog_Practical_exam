@@ -21,6 +21,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
     const navigate = useNavigate();
 
     const handleClick = () => {
+        console.log(id)
         navigate(`/blog/${id}`);
     };
 

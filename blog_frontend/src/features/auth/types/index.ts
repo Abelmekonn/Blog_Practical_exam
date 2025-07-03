@@ -20,7 +20,8 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   user: User;
-  token: string;
+  accessToken: string;
+  message?: string;
 }
 
 export interface AuthState {

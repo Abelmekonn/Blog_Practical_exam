@@ -1,36 +1,17 @@
 import React, { useState } from 'react';
 import type { Comment } from '../../../features/comments/types';
 import { formatDate } from '../../../utils/dateUtils';
-import { CommentForm } from './CommentForm';
 import { useComments } from '../../../features/comments/hooks/useComments';
 
 interface CommentCardProps {
-  comment: Comment & { replies?: Comment[] };
-  postId: string;
-  isReply?: boolean;
+  comment: Comment;
 }
 
 export const CommentCard: React.FC<CommentCardProps> = ({ 
-  comment, 
-  postId, 
-  isReply = false 
+  comment
 }) => {
-  const { addComment, removeComment } = useComments();
-  const [showReplyForm, setShowReplyForm] = useState(false);
+  const { removeComment } = useComments();
   const [showActions, setShowActions] = useState(false);
-
-  const handleReplySubmit = async (content: string) => {
-    try {
-      await addComment({ 
-        postId, 
-        content, 
-        parentId: comment.id 
-      });
-      setShowReplyForm(false);
-    } catch (error) {
-      console.error('Failed to create reply:', error);
-    }
-  };
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this comment?')) {
@@ -42,30 +23,31 @@ export const CommentCard: React.FC<CommentCardProps> = ({
     }
   };
 
+  const authorName = comment.author?.username || 'Anonymous';
+  const authorInitial = authorName.charAt(0).toUpperCase();
+
   return (
-    <div className={`comment-card ${isReply ? 'ml-8 mt-4' : ''}`}>
+    <div className="comment-card">
       <div className="comment-content bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="comment-header flex items-start justify-between mb-3">
           <div className="author-info flex items-center gap-3">
-            {comment.author.avatar ? (
+            {comment.author?.avatar ? (
               <img
                 src={comment.author.avatar}
-                alt={comment.author.username}
+                alt={authorName}
                 className="w-8 h-8 rounded-full"
               />
             ) : (
               <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  {comment.author.username.charAt(0).toUpperCase()}
+                  {authorInitial}
                 </span>
               </div>
             )}
             
             <div className="author-details">
               <div className="author-name font-medium text-gray-900 dark:text-white">
-                {comment.author.firstName && comment.author.lastName
-                  ? `${comment.author.firstName} ${comment.author.lastName}`
-                  : comment.author.username}
+                {authorName}
               </div>
               <div className="comment-meta flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <time dateTime={comment.createdAt}>
@@ -104,43 +86,10 @@ export const CommentCard: React.FC<CommentCardProps> = ({
           </div>
         </div>
         
-        <div className="comment-text text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+        <div className="comment-text text-gray-700 dark:text-gray-300 leading-relaxed">
           {comment.content}
         </div>
-        
-        <div className="comment-actions mt-3 flex items-center gap-4">
-          <button
-            onClick={() => setShowReplyForm(!showReplyForm)}
-            className="reply-btn text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors"
-          >
-            Reply
-          </button>
-        </div>
       </div>
-      
-      {showReplyForm && (
-        <div className="reply-form mt-4 ml-4">
-          <CommentForm
-            onSubmit={handleReplySubmit}
-            onCancel={() => setShowReplyForm(false)}
-            placeholder="Write a reply..."
-            isReply
-          />
-        </div>
-      )}
-      
-      {comment.replies && comment.replies.length > 0 && (
-        <div className="replies mt-4">
-          {comment.replies.map((reply) => (
-            <CommentCard
-              key={reply.id}
-              comment={reply}
-              postId={postId}
-              isReply
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }; 

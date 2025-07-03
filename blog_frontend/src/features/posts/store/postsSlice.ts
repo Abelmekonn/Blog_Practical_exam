@@ -26,9 +26,18 @@ export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (params: PaginationParams | undefined, { rejectWithValue }) => {
     try {
+      console.log("🚀 Fetching posts with params:", params);
       const response = await postsApi.getAllPosts(params);
+      console.log("✅ Posts fetched successfully:", response);
+      console.log("📊 Pagination info:", {
+        total: response.total,
+        page: response.page,
+        limit: response.limit,
+        totalPages: response.totalPages,
+      });
       return response;
     } catch (error) {
+      console.error("❌ Failed to fetch posts:", error);
       return rejectWithValue(
         error instanceof Error ? error.message : "Failed to fetch posts"
       );

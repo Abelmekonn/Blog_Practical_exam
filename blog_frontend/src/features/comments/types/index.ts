@@ -4,7 +4,7 @@ export interface Comment {
   id: string;
   postId: string;
   content: string;
-  author: User;
+  author?: User; // Make optional to handle cases where author might be undefined
   parentId?: string; // For nested comments
   createdAt: string;
   updatedAt: string;
@@ -24,6 +24,7 @@ export interface UpdateCommentRequest {
 
 export interface CommentState {
   comments: Comment[];
+  currentComment: Comment | null;
   loading: boolean;
   error: string | null;
 }

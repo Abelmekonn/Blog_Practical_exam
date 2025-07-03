@@ -6,11 +6,13 @@ export interface HeroSectionProps {
 export interface FeaturedSectionProps {
   className?: string;
   onPostClick?: (postId: string) => void;
+  featuredPosts: FeaturedPost[];
 }
 
 export interface LatestPostsSectionProps {
   className?: string;
   onPostClick?: (postId: string) => void;
+  posts: Post[];
 }
 
 // Common section configurations
@@ -31,7 +33,7 @@ export interface FeaturedPostConfig extends SectionConfig {
 
 // Basic Post interface for sections
 export interface Post {
-  id: number;
+  id: string; // Changed to string to match UUID
   title: string;
   description: string;
   image: string;
@@ -52,4 +54,4 @@ export interface BlogStats {
 }
 
 // Post click handler type
-export type PostClickHandler = (postId: number) => void;
+export type PostClickHandler = (postId: string) => void; // Changed to string

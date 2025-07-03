@@ -20,8 +20,7 @@ export const loginUser = createAsyncThunk(
   async (credentials: LoginRequest, { rejectWithValue }) => {
     try {
       const response = await authAPI.login(credentials);
-      localStorage.setItem("auth_token", response.token);
-      localStorage.setItem("user_data", JSON.stringify(response.user));
+      // Token storage is now handled in the API
       return response;
     } catch (error) {
       return rejectWithValue(
@@ -36,8 +35,7 @@ export const registerUser = createAsyncThunk(
   async (userData: RegisterRequest, { rejectWithValue }) => {
     try {
       const response = await authAPI.register(userData);
-      localStorage.setItem("auth_token", response.token);
-      localStorage.setItem("user_data", JSON.stringify(response.user));
+      // Token storage is now handled in the API
       return response;
     } catch (error) {
       return rejectWithValue(
@@ -108,7 +106,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.token = action.payload.accessToken;
         state.isAuthenticated = true;
         state.error = null;
       })
@@ -125,7 +123,7 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.token = action.payload.accessToken;
         state.isAuthenticated = true;
         state.error = null;
       })

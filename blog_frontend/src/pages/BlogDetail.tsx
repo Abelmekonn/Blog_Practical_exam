@@ -17,6 +17,8 @@ const BlogDetail: React.FC = () => {
   const { currentPost, loading, error, loadPostById, clearPost } = usePosts();
   const { clearAllComments } = useComments();
 
+  console.log(currentPost)
+
   useEffect(() => {
     if (!id) {
       navigate('/');

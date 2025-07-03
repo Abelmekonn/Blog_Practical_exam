@@ -5,7 +5,7 @@ import {
   Body,
   Param,
   Delete,
-  Put,
+  Patch,
   Query,
   UseGuards,
   Request,
@@ -91,7 +91,8 @@ export class PostsController {
 
   @ApiOperation({
     summary: 'Get all posts',
-    description: 'Retrieve all blog posts, optionally filtered by author',
+    description:
+      'Retrieve all blog posts with pagination support, optionally filtered by author',
   })
   @ApiQuery({
     name: 'authorId',
@@ -99,29 +100,64 @@ export class PostsController {
     description: 'Filter posts by author ID',
     example: 'author-uuid-123',
   })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number (default: 1)',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of posts per page (default: 10)',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search in post title and content',
+    example: 'web development',
+  })
   @ApiOkResponse({
-    description: 'List of posts retrieved successfully',
+    description: 'Paginated list of posts retrieved successfully',
     schema: {
-      example: [
-        {
-          id: 'post-uuid-123',
-          title: 'My First Blog Post',
-          content: 'This is the content of my first blog post...',
-          imageUrl: 'https://example.com/image.jpg',
-          author: {
-            id: 'author-uuid-123',
-            name: 'John Doe',
-            email: 'john@example.com',
+      example: {
+        data: [
+          {
+            id: 'post-uuid-123',
+            title: 'My First Blog Post',
+            content: 'This is the content of my first blog post...',
+            imageUrl: 'https://example.com/image.jpg',
+            author: {
+              id: 'author-uuid-123',
+              name: 'John Doe',
+              email: 'john@example.com',
+            },
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
           },
-          createdAt: '2024-01-01T00:00:00.000Z',
-          updatedAt: '2024-01-01T00:00:00.000Z',
-        },
-      ],
+        ],
+        total: 100,
+        page: 1,
+        limit: 10,
+        totalPages: 10,
+      },
     },
   })
   @Get()
-  async findAll(@Query('authorId') authorId?: string) {
-    const query = new GetPostsQuery(authorId);
+  async findAll(
+    @Query('authorId') authorId?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+  ) {
+    const query = new GetPostsQuery(
+      page || 1,
+      limit || 10,
+      search,
+      undefined, // tags - not implemented yet
+      authorId,
+    );
     return this.getPostsHandler.execute(query);
   }
 
@@ -163,10 +199,7 @@ export class PostsController {
       },
     },
   })
-  @ApiUnauthorizedResponse({ description: 'JWT token missing or invalid' })
   @ApiNotFoundResponse({ description: 'Post not found' })
-  @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const query = new GetPostQuery(id);
@@ -196,7 +229,7 @@ export class PostsController {
   @ApiNotFoundResponse({ description: 'Post not found' })
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,
@@ -211,7 +244,10 @@ export class PostsController {
       updatePostDto.imagePublicId,
     );
     await this.updatePostHandler.execute(command);
-    return { message: 'Post updated successfully' };
+
+    // Fetch and return the updated post
+    const query = new GetPostQuery(id);
+    return this.getPostHandler.execute(query);
   }
 
   @ApiOperation({

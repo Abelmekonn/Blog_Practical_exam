@@ -18,13 +18,48 @@ export class CommentRepository
   }
 
   async findByPostId(postId: string): Promise<Comment[]> {
-    return this.commentRepository.find({ where: { post: { id: postId } } });
+    return this.commentRepository.find({
+      where: { post: { id: postId } },
+      relations: ['author'],
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        updatedAt: true,
+        author: {
+          id: true,
+          email: true,
+          username: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+    });
   }
 
   async findByAuthorId(authorId: string): Promise<Comment[]> {
     return this.commentRepository.find({
       where: { author: { id: authorId } },
       relations: ['author', 'post'],
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        updatedAt: true,
+        author: {
+          id: true,
+          email: true,
+          username: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        post: {
+          id: true,
+          title: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
     });
   }
 }

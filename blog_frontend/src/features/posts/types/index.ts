@@ -11,16 +11,18 @@ export interface Post {
   id: string;
   title: string;
   content: string;
-  author: User;
-  featuredImage?: string;
+  imagePublicId?: string;
+  imageUrl?: string;
   createdAt: string;
   updatedAt: string;
+  author?: User; // Make optional since backend might not include it
 }
 
 export interface CreatePostRequest {
   title: string;
   content: string;
-  featuredImage?: string;
+  imageUrl?: string;
+  imagePublicId?: string;
 }
 
 export interface UpdatePostRequest extends Partial<CreatePostRequest> {

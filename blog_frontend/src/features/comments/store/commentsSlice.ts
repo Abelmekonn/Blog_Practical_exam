@@ -29,6 +29,20 @@ export const fetchCommentsByPostId = createAsyncThunk(
   }
 );
 
+export const fetchCommentById = createAsyncThunk(
+  "comments/fetchById",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await commentsApi.getCommentById(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Failed to fetch comment"
+      );
+    }
+  }
+);
+
 export const createComment = createAsyncThunk(
   "comments/create",
   async (commentData: CreateCommentRequest, { rejectWithValue }) => {

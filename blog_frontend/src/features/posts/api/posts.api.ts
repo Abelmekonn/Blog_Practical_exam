@@ -24,12 +24,31 @@ class PostsApiService {
   ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
 
+    // Get token from localStorage for authentication
+    const token = localStorage.getItem("auth_token");
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+      ...options?.headers,
+    };
+
+    // Add Authorization header if token exists
+    if (token) {
+      (headers as Record<string, string>).Authorization = `Bearer ${token}`;
+      console.log(
+        "🔑 Using auth token for request:",
+        `Bearer ${token.substring(0, 20)}...`
+      );
+    } else {
+      console.log("⚠️ No auth token found for request to:", endpoint);
+    }
+
+    console.log("🌐 Making request to:", url);
+    console.log("📋 Request headers:", headers);
+
     try {
       const response = await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-          ...options?.headers,
-        },
+        headers,
         ...options,
       });
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import ThemeToggle from '../common/ThemeToggle';
 
 const Header: React.FC = () => {
@@ -8,37 +9,37 @@ const Header: React.FC = () => {
                 <div className="flex justify-between items-center h-16">
                     {/* Logo/Brand */}
                     <div className="flex items-center">
-                        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                        <Link to="/" className="text-xl font-bold text-gray-900 dark:text-gray-100 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200">
                             Blog App
-                        </h1>
+                        </Link>
                     </div>
 
                     {/* Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
-                        <a
-                            href="/"
+                        <Link
+                            to="/"
                             className="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200"
                         >
                             Home
-                        </a>
-                        <a
-                            href="/posts"
+                        </Link>
+                        <Link
+                            to="/create-post"
                             className="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200"
                         >
-                            Posts
-                        </a>
-                        <a
-                            href="/about"
+                            Create Post
+                        </Link>
+                        <Link
+                            to="/about"
                             className="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200"
                         >
                             About
-                        </a>
-                        <a
-                            href="/contact"
+                        </Link>
+                        <Link
+                            to="/contact"
                             className="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200"
                         >
                             Contact
-                        </a>
+                        </Link>
                     </nav>
 
                     {/* Right side actions */}

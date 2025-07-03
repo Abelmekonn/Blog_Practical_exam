@@ -18,4 +18,17 @@ export * from './pipes/validation.pipe';
 // Decorators
 export * from './decorators/api-response.decorator';
 
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  tags?: string[];
+}
 
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}

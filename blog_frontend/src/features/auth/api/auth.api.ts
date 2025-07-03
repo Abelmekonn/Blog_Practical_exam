@@ -18,7 +18,25 @@ class AuthAPI {
       throw new Error(error.message || "Login failed");
     }
 
-    return response.json();
+    const data = await response.json();
+
+    // Store the token and user data in localStorage
+    const token = data.accessToken || data.token;
+    if (token) {
+      localStorage.setItem("auth_token", token);
+      console.log("Token stored:", token);
+    } else {
+      console.warn("No token found in response");
+    }
+
+    if (data.user) {
+      localStorage.setItem("user_data", JSON.stringify(data.user));
+      console.log("User data stored:", data.user);
+    } else {
+      console.warn("No user data found in response");
+    }
+
+    return data;
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {

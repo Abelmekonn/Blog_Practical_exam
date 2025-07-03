@@ -8,11 +8,7 @@ import {
   clearComments,
   clearError,
 } from "../store/commentsSlice";
-import type {
-  CreateCommentRequest,
-  UpdateCommentRequest,
-  Comment,
-} from "../types";
+import type { CreateCommentRequest, UpdateCommentRequest } from "../types";
 
 export const useComments = () => {
   const dispatch = useAppDispatch();
@@ -56,17 +52,6 @@ export const useComments = () => {
     dispatch(clearError());
   }, [dispatch]);
 
-  // Group comments by parent (for nested comments)
-  const groupCommentsByParent = useCallback((comments: Comment[]) => {
-    const parentComments = comments.filter((comment) => !comment.parentId);
-    const childComments = comments.filter((comment) => comment.parentId);
-
-    return parentComments.map((parent) => ({
-      ...parent,
-      replies: childComments.filter((child) => child.parentId === parent.id),
-    }));
-  }, []);
-
   return {
     // State
     comments,
@@ -80,8 +65,5 @@ export const useComments = () => {
     removeComment,
     clearAllComments,
     clearErrorState,
-
-    // Utilities
-    groupCommentsByParent,
   };
 };
