@@ -1,1 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: 50 100% 94%;        /* #FFFFE3 */
+  --color-foreground: 60 4% 6%;           /* #10100E */
+
+  --color-card: 0 0% 100%;
+  --color-card-foreground: var(--color-foreground);
+
+  --color-popover: 0 0% 100%;
+  --color-popover-foreground: var(--color-foreground);
+
+  --color-primary: 160 84% 39%;
+  --color-primary-foreground: 0 0% 100%;
+
+  --color-secondary: 240 5% 70%;
+  --color-secondary-foreground: 0 0% 10%;
+
+  --color-muted: 0 0% 94%;
+  --color-muted-foreground: 0 0% 40%;
+
+  --color-accent: 25 90% 55%;
+  --color-accent-foreground: 0 0% 100%;
+
+  --color-destructive: 0 84% 60%;
+  --color-destructive-foreground: 0 0% 100%;
+
+  --color-border: 0 0% 85%;
+  --color-input: 0 0% 100%;
+  --color-ring: 160 84% 39%;
+
+  --font-sans: "Inter", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-instrument: "Instrument Serif", serif;
+
+  --radius: 0.625rem;
+}
+
+/* Dark theme overrides */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: 60 4% 6%;          /* #10100E */
+    --color-foreground: 50 100% 94%;       /* #FFFFE3 */
+
+    --color-card: 60 4% 10%;
+    --color-card-foreground: var(--color-foreground);
+
+    --color-popover: 60 4% 10%;
+    --color-popover-foreground: var(--color-foreground);
+
+    --color-primary: 160 84% 52%;
+    --color-primary-foreground: 0 0% 0%;
+
+    --color-secondary: 240 5% 50%;
+    --color-secondary-foreground: var(--color-foreground);
+
+    --color-muted: 60 4% 14%;
+    --color-muted-foreground: 0 0% 60%;
+
+    --color-accent: 25 90% 65%;
+    --color-accent-foreground: 60 4% 6%;
+
+    --color-destructive: 0 84% 75%;
+    --color-destructive-foreground: 0 0% 100%;
+
+    --color-border: 60 4% 20%;
+    --color-input: 60 4% 12%;
+    --color-ring: 160 84% 52%;
+  }
+}
+
+/* Manual class override (.dark) */
+.dark {
+  --color-background: 60 4% 6%;
+  --color-foreground: 50 100% 94%;
+  --color-card: 60 4% 10%;
+  --color-card-foreground: var(--color-foreground);
+  --color-popover: 60 4% 10%;
+  --color-popover-foreground: var(--color-foreground);
+  /* (same as @media above) */
+}
+
+/* Base styles */
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-[hsl(var(--color-background))] text-[hsl(var(--color-foreground))];
+  }
+}
+
+/* Marquee Animations - Tailwind Extensions */
+@keyframes marquee-left {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes marquee-right {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 50s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right 50s linear infinite;
+}

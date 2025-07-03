@@ -14,6 +14,13 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+  ApiNotFoundResponse,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -30,7 +37,7 @@ import { CreateCommentCommand } from '../../application/comments/commands/create
 import { DeleteCommentCommand } from '../../application/comments/commands/delete-comment.command';
 import { GetCommentsByPostQuery } from '../../application/comments/queries/get-comments-by-post.query';
 
-@ApiTags('comments')
+@ApiTags('Comments')
 @Controller('comments')
 export class CommentsController {
   constructor(
@@ -39,10 +46,21 @@ export class CommentsController {
     private readonly getCommentsByPostHandler: GetCommentsByPostHandler,
   ) {}
 
-  @ApiOperation({ summary: 'Create a new comment' })
-  @ApiResponse({ status: 201, description: 'Comment created successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Create a new comment',
+    description: 'Add a comment to a specific blog post',
+  })
+  @ApiBody({ type: CreateCommentDto })
+  @ApiCreatedResponse({
+    description: 'Comment created successfully',
+    schema: {
+      example: {
+        id: 'comment-uuid-123',
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'JWT token missing or invalid' })
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
@@ -58,10 +76,36 @@ export class CommentsController {
     return { id: commentId };
   }
 
-  @ApiOperation({ summary: 'Get all comments for a post' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns all comments for the post',
+  @ApiOperation({
+    summary: 'Get all comments for a post',
+    description: 'Retrieve all comments associated with a specific blog post',
+  })
+  @ApiParam({
+    name: 'postId',
+    description: 'Post ID to get comments for',
+    example: 'post-uuid-123',
+  })
+  @ApiOkResponse({
+    description: 'Comments retrieved successfully',
+    schema: {
+      example: [
+        {
+          id: 'comment-uuid-123',
+          content: 'This is a great post! Thanks for sharing.',
+          author: {
+            id: 'author-uuid-123',
+            name: 'Jane Smith',
+            email: 'jane@example.com',
+          },
+          post: {
+            id: 'post-uuid-123',
+            title: 'My First Blog Post',
+          },
+          createdAt: '2024-01-01T00:00:00.000Z',
+          updatedAt: '2024-01-01T00:00:00.000Z',
+        },
+      ],
+    },
   })
   @Get('post/:postId')
   async findByPostId(@Param('postId') postId: string) {
@@ -69,11 +113,29 @@ export class CommentsController {
     return this.getCommentsByPostHandler.execute(query);
   }
 
-  @ApiOperation({ summary: 'Delete a comment' })
-  @ApiResponse({ status: 200, description: 'Comment deleted successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'Comment not found' })
-  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Delete a comment',
+    description: 'Delete an existing comment (only by the author)',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Comment ID to delete',
+    example: 'comment-uuid-123',
+  })
+  @ApiOkResponse({
+    description: 'Comment deleted successfully',
+    schema: {
+      example: {
+        message: 'Comment deleted successfully',
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'JWT token missing or invalid' })
+  @ApiForbiddenResponse({
+    description: 'You can only delete your own comments',
+  })
+  @ApiNotFoundResponse({ description: 'Comment not found' })
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string, @Request() req: AuthenticatedRequest) {

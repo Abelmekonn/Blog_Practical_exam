@@ -1,19 +1,35 @@
-import "./App.css";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import Home from "./pages/Home";
+import BlogDetail from "./pages/BlogDetail";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import ForgotPassword from "./pages/ForgotPassword";
+import { Login } from "./pages/Login";
+import { Register } from "./pages/Register";
 
 function App() {
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <ThemeProvider >
+        <BrowserRouter>
           <Routes>
-            <Route path="/" element={<div className="text-2xl font-bold text-blue-600 dark:text-blue-300">Blog Home (Placeholder)</div>} />
-            {/* Add more routes here */}
+            <Route path="/" element={<Home />} />
+            <Route path="/blog/:id" element={<BlogDetail />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Routes>
-        </div>
-      </BrowserRouter>
+        </BrowserRouter>
+      </ThemeProvider>
     </Provider>
   );
 }

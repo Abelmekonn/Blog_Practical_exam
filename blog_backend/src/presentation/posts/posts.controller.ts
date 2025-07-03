@@ -16,6 +16,14 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+  ApiNotFoundResponse,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -37,7 +45,7 @@ import { DeletePostCommand } from '../../application/posts/commands/delete-post.
 import { GetPostQuery } from '../../application/posts/queries/get-post.query';
 import { GetPostsQuery } from '../../application/posts/queries/get-posts.query';
 
-@ApiTags('posts')
+@ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
   constructor(
@@ -48,10 +56,22 @@ export class PostsController {
     private readonly getPostsHandler: GetPostsHandler,
   ) {}
 
-  @ApiOperation({ summary: 'Create a new post' })
-  @ApiResponse({ status: 201, description: 'Post created successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Create a new post',
+    description:
+      'Create a new blog post with title, content, and optional image',
+  })
+  @ApiBody({ type: CreatePostDto })
+  @ApiCreatedResponse({
+    description: 'Post created successfully',
+    schema: {
+      example: {
+        id: 'post-uuid-123',
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'JWT token missing or invalid' })
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
@@ -69,19 +89,83 @@ export class PostsController {
     return { id: postId };
   }
 
-  @ApiOperation({ summary: 'Get all posts' })
-  @ApiResponse({ status: 200, description: 'Returns all posts' })
+  @ApiOperation({
+    summary: 'Get all posts',
+    description: 'Retrieve all blog posts, optionally filtered by author',
+  })
+  @ApiQuery({
+    name: 'authorId',
+    required: false,
+    description: 'Filter posts by author ID',
+    example: 'author-uuid-123',
+  })
+  @ApiOkResponse({
+    description: 'List of posts retrieved successfully',
+    schema: {
+      example: [
+        {
+          id: 'post-uuid-123',
+          title: 'My First Blog Post',
+          content: 'This is the content of my first blog post...',
+          imageUrl: 'https://example.com/image.jpg',
+          author: {
+            id: 'author-uuid-123',
+            name: 'John Doe',
+            email: 'john@example.com',
+          },
+          createdAt: '2024-01-01T00:00:00.000Z',
+          updatedAt: '2024-01-01T00:00:00.000Z',
+        },
+      ],
+    },
+  })
   @Get()
   async findAll(@Query('authorId') authorId?: string) {
     const query = new GetPostsQuery(authorId);
     return this.getPostsHandler.execute(query);
   }
 
-  @ApiOperation({ summary: 'Get a post by ID' })
-  @ApiResponse({ status: 200, description: 'Returns the post' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'Post not found' })
-  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get a post by ID',
+    description: 'Retrieve a specific blog post with all its comments',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Post ID',
+    example: 'post-uuid-123',
+  })
+  @ApiOkResponse({
+    description: 'Post retrieved successfully',
+    schema: {
+      example: {
+        id: 'post-uuid-123',
+        title: 'My First Blog Post',
+        content: 'This is the content of my first blog post...',
+        imageUrl: 'https://example.com/image.jpg',
+        author: {
+          id: 'author-uuid-123',
+          name: 'John Doe',
+          email: 'john@example.com',
+        },
+        comments: [
+          {
+            id: 'comment-uuid-123',
+            content: 'Great post!',
+            author: {
+              id: 'commenter-uuid-123',
+              name: 'Jane Smith',
+            },
+            createdAt: '2024-01-01T00:00:00.000Z',
+          },
+        ],
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'JWT token missing or invalid' })
+  @ApiNotFoundResponse({ description: 'Post not found' })
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -89,11 +173,28 @@ export class PostsController {
     return this.getPostHandler.execute(query);
   }
 
-  @ApiOperation({ summary: 'Update a post' })
-  @ApiResponse({ status: 200, description: 'Post updated successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'Post not found' })
-  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Update a post',
+    description: 'Update an existing blog post (only by the author)',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Post ID to update',
+    example: 'post-uuid-123',
+  })
+  @ApiBody({ type: UpdatePostDto })
+  @ApiOkResponse({
+    description: 'Post updated successfully',
+    schema: {
+      example: {
+        message: 'Post updated successfully',
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'JWT token missing or invalid' })
+  @ApiForbiddenResponse({ description: 'You can only update your own posts' })
+  @ApiNotFoundResponse({ description: 'Post not found' })
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
@@ -113,11 +214,27 @@ export class PostsController {
     return { message: 'Post updated successfully' };
   }
 
-  @ApiOperation({ summary: 'Delete a post' })
-  @ApiResponse({ status: 200, description: 'Post deleted successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'Post not found' })
-  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Delete a post',
+    description: 'Delete an existing blog post (only by the author)',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Post ID to delete',
+    example: 'post-uuid-123',
+  })
+  @ApiOkResponse({
+    description: 'Post deleted successfully',
+    schema: {
+      example: {
+        message: 'Post deleted successfully',
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'JWT token missing or invalid' })
+  @ApiForbiddenResponse({ description: 'You can only delete your own posts' })
+  @ApiNotFoundResponse({ description: 'Post not found' })
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string, @Request() req: AuthenticatedRequest) {

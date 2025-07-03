@@ -13,6 +13,9 @@ import { PostsPresentationModule } from './presentation/posts/posts.module';
 import { CommentsPresentationModule } from './presentation/comments/comments.module';
 import { UsersPresentationModule } from './presentation/users/users.module';
 
+// Database seeds
+import { SeedModule } from './database/seeds/seed.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +29,7 @@ import { UsersPresentationModule } from './presentation/users/users.module';
     PostsPresentationModule,
     CommentsPresentationModule,
     UsersPresentationModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

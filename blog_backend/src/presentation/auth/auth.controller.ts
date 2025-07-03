@@ -16,28 +16,81 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiUnauthorizedResponse,
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 
-@ApiTags('auth')
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: 'User login' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns JWT token with user data and success message',
+  @ApiOperation({
+    summary: 'User login',
+    description:
+      'Authenticate user with email and password to receive JWT token',
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBody({ type: LoginDto })
+  @ApiOkResponse({
+    description: 'Login successful - returns JWT token and user data',
+    schema: {
+      example: {
+        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        user: {
+          id: 'uuid-string',
+          email: 'user@example.com',
+          name: 'John Doe',
+          createdAt: '2024-01-01T00:00:00.000Z',
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid credentials',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Invalid email or password',
+        error: 'Unauthorized',
+      },
+    },
+  })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Request() req) {
     return this.authService.login(req.user);
   }
 
-  @ApiOperation({ summary: 'User registration' })
-  @ApiResponse({ status: 201, description: 'User created successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiOperation({
+    summary: 'User registration',
+    description: 'Create a new user account with email, password, and name',
+  })
+  @ApiBody({ type: RegisterDto })
+  @ApiCreatedResponse({
+    description: 'User registered successfully',
+    schema: {
+      example: {
+        id: 'uuid-string',
+        email: 'user@example.com',
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Validation failed or user already exists',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: [
+          'email must be a valid email',
+          'password must be longer than 6 characters',
+        ],
+        error: 'Bad Request',
+      },
+    },
+  })
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     const user = await this.authService.register(
@@ -48,10 +101,33 @@ export class AuthController {
     return { id: user.id, email: user.email };
   }
 
-  @ApiOperation({ summary: 'Get current user profile' })
-  @ApiResponse({ status: 200, description: 'Returns user profile' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get current user profile',
+    description: "Retrieve the authenticated user's profile information",
+  })
+  @ApiOkResponse({
+    description: 'User profile retrieved successfully',
+    schema: {
+      example: {
+        id: 'uuid-string',
+        email: 'user@example.com',
+        name: 'John Doe',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'JWT token missing or invalid',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+        error: 'Unauthorized',
+      },
+    },
+  })
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {

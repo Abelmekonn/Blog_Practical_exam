@@ -4,11 +4,29 @@ import { ApiResponse, ApiResponseOptions } from '@nestjs/swagger';
 export interface StandardApiResponseOptions {
   status: number;
   description: string;
-  type?: Type<any> | Function | [Function] | string;
+  type?: Type<any> | Type<unknown> | [Type<unknown>] | string;
   isArray?: boolean;
 }
 
+// Helper function to get type name safely
+function getTypeName(
+  type: Type<any> | Type<unknown> | [Type<unknown>] | string,
+): string {
+  if (typeof type === 'string') {
+    return type;
+  }
+  if (Array.isArray(type)) {
+    return type[0]?.name || 'object';
+  }
+  if (typeof type === 'function') {
+    return type.name || 'object';
+  }
+  return 'object';
+}
+
 export function StandardApiResponse(options: StandardApiResponseOptions) {
+  const typeName = options.type ? getTypeName(options.type) : 'object';
+
   const responseSchema = {
     type: 'object',
     properties: {
@@ -20,9 +38,9 @@ export function StandardApiResponse(options: StandardApiResponseOptions) {
         ? options.isArray
           ? {
               type: 'array',
-              items: { $ref: `#/components/schemas/${options.type.name}` },
+              items: { $ref: `#/components/schemas/${typeName}` },
             }
-          : { $ref: `#/components/schemas/${options.type.name}` }
+          : { $ref: `#/components/schemas/${typeName}` }
         : { type: 'object' },
       message: {
         type: 'string',
