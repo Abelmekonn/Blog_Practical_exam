@@ -149,15 +149,24 @@ describe('SearchInput', () => {
     expect(mockOnSearch).toHaveBeenCalledTimes(1)
   })
 
-  it('should handle empty search query', () => {
+  it('should handle empty search query after typing', () => {
     const mockOnSearch = vi.fn()
     
     render(<SearchInput onSearch={mockOnSearch} debounceDelay={300} />)
 
     const input = screen.getByTestId('search-input')
     
-    // Type and then clear
+    // Type something first
     fireEvent.change(input, { target: { value: 'test' } })
+    
+    // Fast-forward time
+    act(() => {
+      vi.advanceTimersByTime(300)
+    })
+    
+    expect(mockOnSearch).toHaveBeenCalledWith('test')
+    
+    // Then clear
     fireEvent.change(input, { target: { value: '' } })
     
     // Fast-forward time
@@ -166,5 +175,6 @@ describe('SearchInput', () => {
     })
     
     expect(mockOnSearch).toHaveBeenCalledWith('')
+    expect(mockOnSearch).toHaveBeenCalledTimes(2)
   })
 }) 

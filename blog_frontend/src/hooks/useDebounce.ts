@@ -34,21 +34,26 @@ export function useDebouncedSearch(
 ) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, delay);
-  const isFirstRender = useRef(true);
+  const hasUserInteracted = useRef(false);
 
   useEffect(() => {
-    // Skip the first render to avoid calling onSearch with initial empty state
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    // Skip the first render with initial empty state
+    // But allow empty strings that are set by user interaction
+    if (!hasUserInteracted.current) {
       return;
     }
 
     onSearch(debouncedSearchQuery.trim());
   }, [debouncedSearchQuery, onSearch]);
 
+  const handleSetSearchQuery = (query: string) => {
+    hasUserInteracted.current = true;
+    setSearchQuery(query);
+  };
+
   return {
     searchQuery,
-    setSearchQuery,
+    setSearchQuery: handleSetSearchQuery,
     debouncedSearchQuery,
   };
 }

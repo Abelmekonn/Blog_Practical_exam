@@ -130,10 +130,22 @@ describe("useDebouncedSearch", () => {
     expect(mockOnSearch).toHaveBeenCalledWith("test query");
   });
 
-  it("should handle empty search query", () => {
+  it("should handle empty search query after typing", () => {
     const mockOnSearch = vi.fn();
     const { result } = renderHook(() => useDebouncedSearch(mockOnSearch, 300));
 
+    // First type something
+    act(() => {
+      result.current.setSearchQuery("test");
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(mockOnSearch).toHaveBeenCalledWith("test");
+
+    // Then clear it
     act(() => {
       result.current.setSearchQuery("");
     });
@@ -143,6 +155,7 @@ describe("useDebouncedSearch", () => {
     });
 
     expect(mockOnSearch).toHaveBeenCalledWith("");
+    expect(mockOnSearch).toHaveBeenCalledTimes(2);
   });
 
   it("should debounce rapid search query changes", () => {
