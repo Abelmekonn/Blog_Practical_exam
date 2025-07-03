@@ -35,16 +35,9 @@ class PostsApiService {
     // Add Authorization header if token exists
     if (token) {
       (headers as Record<string, string>).Authorization = `Bearer ${token}`;
-      console.log(
-        "🔑 Using auth token for request:",
-        `Bearer ${token.substring(0, 20)}...`
-      );
     } else {
-      console.log("⚠️ No auth token found for request to:", endpoint);
+      console.log("No auth token found");
     }
-
-    console.log("🌐 Making request to:", url);
-    console.log("📋 Request headers:", headers);
 
     try {
       const response = await fetch(url, {

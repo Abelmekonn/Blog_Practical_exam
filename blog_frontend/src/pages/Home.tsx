@@ -4,7 +4,7 @@ import FeaturedSection from "@/components/sections/FeaturedSection";
 import LatestPostsSection from "@/components/sections/LatestPostsSection";
 import { SEO } from "../components/common";
 import { usePosts } from "../features/posts/hooks/usePosts";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Post, FeaturedPost, BlogStats } from "../types/section.types";
 import type { Post as ApiPost } from "../features/posts/types";
@@ -53,27 +53,44 @@ const transformApiPostToFeaturedPost = (apiPost: ApiPost): FeaturedPost | null =
 const Home = () => {
     const { posts, loading, error, loadPosts, pagination } = usePosts();
     const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState<string>("");
     
-    // Load posts on component mount
+    // Load initial posts on component mount
     useEffect(() => {
         loadPosts({ page: 1, limit: 10 });
     }, [loadPosts]);
 
-    // Transform API posts to section format
+    // Local search function
+    const filterPostsBySearch = (posts: ApiPost[], query: string): ApiPost[] => {
+        if (!query.trim()) return posts;
+        
+        const searchTerm = query.toLowerCase();
+        return posts.filter(post => 
+            post.title?.toLowerCase().includes(searchTerm) ||
+            post.content?.toLowerCase().includes(searchTerm) ||
+            post.author?.username?.toLowerCase().includes(searchTerm) ||
+            post.author?.firstName?.toLowerCase().includes(searchTerm) ||
+            post.author?.lastName?.toLowerCase().includes(searchTerm)
+        );
+    };
+
+    // Transform API posts to section format - use filtered posts when searching
     const transformedPosts = useMemo(() => {
-        const transformed = (posts || [])
+        const filteredPosts = filterPostsBySearch(posts || [], searchQuery);
+        const transformed = filteredPosts
             .map(transformApiPostToSectionPost)
             .filter((post): post is Post => post !== null);
         return transformed;
-    }, [posts]);
+    }, [posts, searchQuery]);
 
+    // Featured posts always come from original posts (not search results)
     const featuredPosts = useMemo(() => {
         const featured = (posts || [])
             .slice(0, 3)
             .map(transformApiPostToFeaturedPost)
             .filter((post): post is FeaturedPost => post !== null);
         return featured;
-    }, [posts]);
+    }, [posts]); // Only depends on original posts, not search results
 
     // Fixed to use string UUID instead of number
     const handleCardClick = (postId: string) => {
@@ -81,7 +98,7 @@ const Home = () => {
     };
 
     const handleSearch = (query: string) => {
-        loadPosts({ page: 1, limit: 10, search: query });
+        setSearchQuery(query);
     };
 
     const blogStats: BlogStats = {
@@ -132,7 +149,7 @@ const Home = () => {
                     blogStats={blogStats}
                 />
 
-                {/* Featured Posts Section */}
+                {/* Featured Posts Section - Always shows original posts */}
                 {featuredPosts.length > 0 && (
                     <FeaturedSection
                         featuredPosts={featuredPosts}
@@ -140,7 +157,21 @@ const Home = () => {
                     />
                 )}
 
-                {/* Latest Posts Section */}
+                {/* Search Results Header */}
+                {searchQuery && (
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                                Search Results for "{searchQuery}"
+                            </h3>
+                            <p className="text-sm text-blue-700 dark:text-blue-300">
+                                Found {transformedPosts.length} result(s)
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Latest Posts Section - Shows search results when searching, original posts otherwise */}
                 {transformedPosts.length > 0 && (
                     <LatestPostsSection
                         posts={transformedPosts}
@@ -148,10 +179,15 @@ const Home = () => {
                     />
                 )}
 
-                {/* Show message if no posts */}
+                {/* Show message if no posts or no search results */}
                 {transformedPosts.length === 0 && !loading && (
                     <div className="text-center py-12">
-                        <p className="text-lg text-gray-600">No posts available at the moment.</p>
+                        <p className="text-lg text-gray-600">
+                            {searchQuery 
+                                ? `No posts found for "${searchQuery}". Try a different search term.`
+                                : "No posts available at the moment."
+                            }
+                        </p>
                     </div>
                 )}
             </div>
