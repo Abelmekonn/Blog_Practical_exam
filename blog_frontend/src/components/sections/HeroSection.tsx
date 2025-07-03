@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TechMarquee from '../common/TechMarquee';
+import SearchInput from '../common/SearchInput';
 
 
 interface BlogStats {
@@ -30,14 +31,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     onSearch,
     blogStats,
 }) => {
-    const [searchQuery, setSearchQuery] = useState('');
-
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (onSearch && searchQuery.trim()) {
-            onSearch(searchQuery.trim());
-        }
-    };
 
     return (
         <section
@@ -80,26 +73,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                     </div>
                 )}
 
-                {showSearch && (
-                    <form onSubmit={handleSearch} className="max-w-lg mx-auto mb-8">
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Search articles, news, topics..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full px-6 py-4 text-lg rounded-full border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 shadow-lg focus:shadow-xl"
-                            />
-                            <button
-                                type="submit"
-                                className="absolute right-2 top-1/2 transform -translate-y-1/2 p-3 bg-gray-400 dark:bg-[#FFFFE3] text-white dark:text-gray-900 rounded-full hover:bg-gray-700 dark:hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900 transition-all duration-200 shadow-md hover:shadow-lg"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </button>
-                        </div>
-                    </form>
+                {showSearch && onSearch && (
+                    <div className="max-w-lg mx-auto mb-8">
+                        <SearchInput
+                            onSearch={onSearch}
+                            placeholder="Search articles, news, topics..."
+                            variant="hero"
+                            debounceDelay={300}
+                        />
+                    </div>
                 )}
 
 

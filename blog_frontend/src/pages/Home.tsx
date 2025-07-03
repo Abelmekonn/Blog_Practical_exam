@@ -17,19 +17,17 @@ const transformApiPostToSectionPost = (apiPost: ApiPost): Post | null => {
     }
     
     // Ensure all required fields are strings
-    const title = apiPost.title || "Untitled";
-    const description = apiPost.content ? 
+    const title = (apiPost.title || "Untitled") as string;
+    const description = (apiPost.content ? 
         (apiPost.content.length > 150 ? apiPost.content.substring(0, 150) + "..." : apiPost.content) 
-        : "No description available";
-    const image = apiPost.imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop";
-    const createdDay = apiPost.createdAt ? 
+        : "No description available") as string;
+    const image = (apiPost.imageUrl || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop") as string;
+    const createdDay = (apiPost.createdAt ? 
         new Date(apiPost.createdAt).toISOString().split('T')[0] 
-        : new Date().toISOString().split('T')[0];
-    
-    console.log(`🔄 Transforming post: "${title}" with UUID ${apiPost.id}`);
+        : new Date().toISOString().split('T')[0]) as string;
     
     return {
-        id: apiPost.id, // Now TypeScript knows this is definitely a string
+        id: apiPost.id!, // Now TypeScript knows this is definitely a string
         title: title,
         description: description,
         image: image,
@@ -38,8 +36,10 @@ const transformApiPostToSectionPost = (apiPost: ApiPost): Post | null => {
 };
 
 // Helper function to transform API post to featured post format
-const transformApiPostToFeaturedPost = (apiPost: ApiPost): FeaturedPost => {
+const transformApiPostToFeaturedPost = (apiPost: ApiPost): FeaturedPost | null => {
     const basePost = transformApiPostToSectionPost(apiPost);
+    if (!basePost) return null;
+    
     const readTime = Math.ceil((apiPost.content || "").length / 200) + " min";
     
     return {
@@ -53,8 +53,6 @@ const Home = () => {
     const { posts, loading, error, loadPosts, pagination } = usePosts();
     const navigate = useNavigate();
     
-    console.log("🔄 Posts:", posts);
-
     // Load posts on component mount
     useEffect(() => {
         loadPosts({ page: 1, limit: 10 });
@@ -65,8 +63,6 @@ const Home = () => {
         const transformed = (posts || [])
             .map(transformApiPostToSectionPost)
             .filter((post): post is Post => post !== null);
-        console.log("🔄 Transformed posts for sections:", transformed);
-        console.log("📊 Transformed posts count:", transformed.length);
         return transformed;
     }, [posts]);
 
@@ -75,19 +71,15 @@ const Home = () => {
             .slice(0, 3)
             .map(transformApiPostToFeaturedPost)
             .filter((post): post is FeaturedPost => post !== null);
-        console.log("⭐ Featured posts:", featured);
-        console.log("📊 Featured posts count:", featured.length);
         return featured;
     }, [posts]);
 
     // Fixed to use string UUID instead of number
     const handleCardClick = (postId: string) => {
-        console.log(`Navigating to post ${postId}`);
         navigate(`/blog/${postId}`);
     };
 
     const handleSearch = (query: string) => {
-        console.log('Searching for:', query);
         loadPosts({ page: 1, limit: 10, search: query });
     };
 

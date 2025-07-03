@@ -2,7 +2,9 @@ import { Repository, DeepPartial } from 'typeorm';
 import { IBaseRepository } from '../../../core/base/base.repository.interface';
 
 export abstract class BaseRepository<T> implements IBaseRepository<T> {
-  constructor(private readonly repository: Repository<T extends object ? T : never>) {}
+  constructor(
+    private readonly repository: Repository<T extends object ? T : never>,
+  ) {}
 
   async findById(id: string): Promise<T | null> {
     return this.repository.findOne({ where: { id } as any });
@@ -13,13 +15,19 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   }
 
   async create(data: DeepPartial<T>): Promise<T> {
-    const entity = this.repository.create(data as DeepPartial<T extends object ? T : never>);
+    const entity = this.repository.create(
+      data as DeepPartial<T extends object ? T : never>,
+    );
     return this.repository.save(entity as any);
   }
 
   async update(id: string, data: DeepPartial<T>): Promise<T> {
     await this.repository.update(id, data as any);
-    return this.findById(id) as Promise<T>;
+    const updatedEntity = await this.findById(id);
+    if (!updatedEntity) {
+      throw new Error(`Entity with id ${id} not found after update`);
+    }
+    return updatedEntity;
   }
 
   async delete(id: string): Promise<void> {

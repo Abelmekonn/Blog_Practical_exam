@@ -17,6 +17,29 @@ export class PostRepository
     super(postRepository);
   }
 
+  async findById(id: string): Promise<Post | null> {
+    return this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .select([
+        'post.id',
+        'post.title',
+        'post.content',
+        'post.imageUrl',
+        'post.imagePublicId',
+        'post.createdAt',
+        'post.updatedAt',
+        'author.id',
+        'author.username',
+        'author.email',
+        'author.createdAt',
+        'author.updatedAt',
+        // password excluded
+      ])
+      .where('post.id = :id', { id })
+      .getOne();
+  }
+
   async findByAuthorId(authorId: string): Promise<Post[]> {
     return this.postRepository
       .createQueryBuilder('post')

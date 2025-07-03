@@ -183,19 +183,6 @@ export const PostForm: React.FC<PostFormProps> = ({
           />
         </div>
 
-        {/* Current Image Info */}
-        {imageUrl && (
-          <div className="text-sm text-gray-600 dark:text-gray-400 bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
-            <div className="flex items-center gap-2">
-              <span className="text-green-600 dark:text-green-400">✅</span>
-              <span>Image uploaded successfully!</span>
-            </div>
-            <p className="font-mono text-xs break-all mt-1 text-gray-500 dark:text-gray-400">
-              {imageUrl}
-            </p>
-          </div>
-        )}
-
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
           <button

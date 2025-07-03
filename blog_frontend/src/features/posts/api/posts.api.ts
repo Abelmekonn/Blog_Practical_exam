@@ -92,9 +92,12 @@ class PostsApiService {
   }
 
   async updatePost(id: string, postData: UpdatePostRequest): Promise<Post> {
+    // Remove id from the request body since it's in the URL path
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _, ...bodyData } = postData;
     return this.request<Post>(`/posts/${id}`, {
       method: "PATCH",
-      body: JSON.stringify(postData),
+      body: JSON.stringify(bodyData),
     });
   }
 

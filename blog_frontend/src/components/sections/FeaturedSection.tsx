@@ -3,23 +3,22 @@ import { BlogCard } from "../common";
 
 interface FeaturedSectionProps {
     featuredPosts: FeaturedPost[];
-    onPostClick: PostClickHandler;
+    onPostClick?: PostClickHandler;
 }
 
-const FeaturedSection = ({ featuredPosts, onPostClick: _onPostClick }: FeaturedSectionProps) => {
+const FeaturedSection = ({ featuredPosts, onPostClick }: FeaturedSectionProps) => {
     if (!featuredPosts.length) return null;
 
     const mainFeatured = featuredPosts[0]!;
     const sideFeatured = featuredPosts.slice(1, 3);
 
     return (
-        <section className="py-12 bg-gray-50/50 dark:bg-gray-900/50 ">
+        <section className="py-12 bg-gray-50/50 dark:bg-gray-900/50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-t-gray-700 dark:border-t-gray-400 py-4">
-                <div className=" mb-16">
+                <div className="mb-16">
                     <h2 className="text-3xl md:text-5xl font-[400] font-instrument leading-tight">
                         Recent Articles Posts
                     </h2>
-
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -30,10 +29,11 @@ const FeaturedSection = ({ featuredPosts, onPostClick: _onPostClick }: FeaturedS
                         description={mainFeatured.description}
                         createdDay={mainFeatured.createdDay}
                         id={mainFeatured.id.toString()}
-                        />
+                        onPostClick={onPostClick}
+                    />
 
                     {/* Side Featured Posts */}
-                    <div className="flex flex-col justify-between gap-2 ">
+                    <div className="flex flex-col justify-between gap-3 sm:gap-4">
                         {sideFeatured.map((post) => (
                             <BlogCard
                                 key={post.id}
@@ -43,6 +43,7 @@ const FeaturedSection = ({ featuredPosts, onPostClick: _onPostClick }: FeaturedS
                                 createdDay={post.createdDay}
                                 id={post.id.toString()}
                                 flex={true}
+                                onPostClick={onPostClick}
                             />
                         ))}
                     </div>

@@ -229,5 +229,4 @@ open http://localhost:3000/api/docs
 # 2. Login at /auth/login to get JWT
 # 3. Use JWT to test protected endpoints
 ```
-
-**🎯 Your blog API now has professional-grade documentation that rivals major tech companies!** 🎉 
+ 

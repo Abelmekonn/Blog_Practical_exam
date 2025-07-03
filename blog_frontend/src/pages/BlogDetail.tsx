@@ -115,7 +115,7 @@ const BlogDetail: React.FC = () => {
     <Layout>
       <div className="blog-detail-page">
         {/* Breadcrumb Navigation */}
-        <nav className="breadcrumb mb-6">
+        <nav className="breadcrumb mb-6 mt-6">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
               <Link 
