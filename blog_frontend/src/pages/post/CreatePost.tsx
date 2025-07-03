@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import Layout from '../components/layout/Layout';
-import { PostForm } from '../components/forms/PostForm';
-import { useAuth } from '../features/auth/hooks/useAuth';
-import ComponentLoading from '../components/loader/ComponentLoading';
+import Layout from '../../components/layout/Layout';
+import { PostForm } from '../../components/forms/PostForm';
+import { useAuth } from '../../features/auth/hooks/useAuth';
+import ComponentLoading from '../../components/loader/ComponentLoading';
 
 const CreatePost: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();

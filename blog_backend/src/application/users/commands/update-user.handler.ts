@@ -5,7 +5,9 @@ import { USER_REPOSITORY } from '../../../domain/users/user.repository.interface
 import { IUserRepository } from '../../../domain/users/user.repository.interface';
 
 @Injectable()
-export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand, void> {
+export class UpdateUserHandler
+  implements ICommandHandler<UpdateUserCommand, void>
+{
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
@@ -13,7 +15,7 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand, voi
 
   async execute(command: UpdateUserCommand): Promise<void> {
     const { id, username, email } = command;
-    
+
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);

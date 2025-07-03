@@ -96,6 +96,33 @@ class AuthAPI {
     const data = await response.json();
     return data.user;
   }
+
+  async updateProfile(
+    userId: string,
+    updates: { name?: string; email?: string }
+  ): Promise<{ message: string }> {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("No token found");
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Profile update failed");
+    }
+
+    return response.json();
+  }
 }
 
 export const authAPI = new AuthAPI();

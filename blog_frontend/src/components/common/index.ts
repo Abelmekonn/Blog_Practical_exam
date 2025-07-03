@@ -2,6 +2,7 @@
 export { default as BlogCard } from "./BlogCard";
 export { default as Button } from "./Button";
 export { default as ImageUpload } from "./ImageUpload";
+export { default as SEO } from "./SEO";
 export { default as TechMarquee } from "./TechMarquee";
 export { default as ThemeToggle } from "./ThemeToggle";
 export { default as TextTruncate } from "./TextTruncate";

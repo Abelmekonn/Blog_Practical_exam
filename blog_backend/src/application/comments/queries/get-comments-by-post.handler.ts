@@ -6,7 +6,9 @@ import { ICommentRepository } from '../../../domain/comments/comment.repository.
 import { Comment } from '../../../domain/comments/comment.entity';
 
 @Injectable()
-export class GetCommentsByPostHandler implements IQueryHandler<GetCommentsByPostQuery, Comment[]> {
+export class GetCommentsByPostHandler
+  implements IQueryHandler<GetCommentsByPostQuery, Comment[]>
+{
   constructor(
     @Inject(COMMENT_REPOSITORY)
     private readonly commentRepository: ICommentRepository,

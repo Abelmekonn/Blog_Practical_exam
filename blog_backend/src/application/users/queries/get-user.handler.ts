@@ -14,7 +14,7 @@ export class GetUserHandler implements IQueryHandler<GetUserQuery, User> {
 
   async execute(query: GetUserQuery): Promise<User> {
     const { id } = query;
-    
+
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);

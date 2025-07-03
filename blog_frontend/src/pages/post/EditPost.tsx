@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import Layout from '../components/layout/Layout';
-import { PostForm } from '../components/forms/PostForm';
-import ComponentLoading from '../components/loader/ComponentLoading';
-import { postsApi } from '../features/posts/api/posts.api';
-import { useAuth } from '../features/auth/hooks/useAuth';
-import type { Post } from '../features/posts/types';
+import Layout from '../../components/layout/Layout';
+import { PostForm } from '../../components/forms/PostForm';
+import ComponentLoading from '../../components/loader/ComponentLoading';
+import { postsApi } from '../../features/posts/api/posts.api';
+import { useAuth } from '../../features/auth/hooks/useAuth';
+import type { Post } from '../../features/posts/types';
 
 const EditPost: React.FC = () => {
   const { id } = useParams<{ id: string }>();

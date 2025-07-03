@@ -2,6 +2,7 @@ import Layout from "../components/layout/Layout"
 import HeroSection from "@/components/sections/HeroSection";
 import FeaturedSection from "@/components/sections/FeaturedSection";
 import LatestPostsSection from "@/components/sections/LatestPostsSection";
+import { SEO } from "../components/common";
 import { usePosts } from "../features/posts/hooks/usePosts";
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -113,6 +114,13 @@ const Home = () => {
 
     return (
         <Layout>
+            <SEO
+                title="Home"
+                description="Discover the latest in web development with cutting-edge tutorials, insights, and best practices from industry experts. Join our community of developers building the future of the web."
+                keywords="web development, tutorials, programming, javascript, react, node.js, technology blog"
+                url="/"
+                type="website"
+            />
             <div className="">
                 {/* Hero Section */}
                 <HeroSection

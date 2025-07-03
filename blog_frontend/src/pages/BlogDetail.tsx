@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { usePosts } from '../features/posts/hooks/usePosts';
 import { useComments } from '../features/comments/hooks/useComments';
 import Layout from '../components/layout/Layout';
+import { SEO } from '../components/common';
 import { 
   PostHeader, 
   PostContent, 
@@ -113,6 +114,28 @@ const BlogDetail: React.FC = () => {
 
   return (
     <Layout>
+      {currentPost && (
+        <SEO
+          title={currentPost.title}
+          description={
+            currentPost.content 
+              ? currentPost.content.length > 160 
+                ? currentPost.content.substring(0, 160) + "..."
+                : currentPost.content
+              : "Read this blog post on our platform"
+          }
+          keywords={`blog, article, ${currentPost.title.split(' ').slice(0, 5).join(', ')}`}
+          image={currentPost.imageUrl}
+          url={`/blog/${currentPost.id}`}
+          type="article"
+          article={{
+            author: "Blog Author",
+            publishedTime: currentPost.createdAt,
+            modifiedTime: currentPost.updatedAt,
+            tags: currentPost.title.split(' ').slice(0, 3)
+          }}
+        />
+      )}
       <div className="blog-detail-page">
         {/* Breadcrumb Navigation */}
         <nav className="breadcrumb mb-6 mt-6">

@@ -12,13 +12,10 @@ import { GetUserHandler } from './queries/get-user.handler';
   providers: [
     // Command Handlers
     UpdateUserHandler,
-    
+
     // Query Handlers
     GetUserHandler,
   ],
-  exports: [
-    UpdateUserHandler,
-    GetUserHandler,
-  ],
+  exports: [UpdateUserHandler, GetUserHandler],
 })
 export class UsersModule {}

@@ -4,7 +4,13 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { authAPI } from "../api/auth.api";
-import type { AuthState, LoginRequest, RegisterRequest, User } from "../types";
+import type {
+  AuthState,
+  LoginRequest,
+  RegisterRequest,
+  UpdateProfileRequest,
+  User,
+} from "../types";
 
 const initialState: AuthState = {
   user: null,
@@ -67,6 +73,24 @@ export const getCurrentUser = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : "Failed to get user"
+      );
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (
+    { userId, updates }: { userId: string; updates: UpdateProfileRequest },
+    { rejectWithValue }
+  ) => {
+    try {
+      await authAPI.updateProfile(userId, updates);
+      // Return the updates to merge with current user state
+      return updates;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Profile update failed"
       );
     }
   }
@@ -156,6 +180,23 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         localStorage.removeItem("auth_token");
         localStorage.removeItem("user_data");
+      })
+      // Update profile
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.user) {
+          state.user = { ...state.user, ...action.payload };
+          localStorage.setItem("user_data", JSON.stringify(state.user));
+        }
+        state.error = null;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

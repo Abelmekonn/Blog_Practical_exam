@@ -7,12 +7,18 @@ export class UpdatePostDto {
   @IsString()
   title?: string;
 
-  @ApiProperty({ example: 'Updated content of my blog post...', required: false })
+  @ApiProperty({
+    example: 'Updated content of my blog post...',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   content?: string;
 
-  @ApiProperty({ example: 'https://cloudinary.com/updated-image.jpg', required: false })
+  @ApiProperty({
+    example: 'https://cloudinary.com/updated-image.jpg',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   imageUrl?: string;

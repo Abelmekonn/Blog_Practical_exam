@@ -1,5 +1,18 @@
-import { Controller, Get, Put, Body, Param, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Put,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -13,7 +26,7 @@ import { GetUserHandler } from '../../application/users/queries/get-user.handler
 import { UpdateUserCommand } from '../../application/users/commands/update-user.command';
 import { GetUserQuery } from '../../application/users/queries/get-user.query';
 
-@ApiTags('users')
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(
@@ -39,12 +52,16 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Request() req) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Request() req,
+  ) {
     // Check if user is updating their own profile
     if (id !== req.user.id) {
       return { message: 'You can only update your own profile' };
     }
-    
+
     const command = new UpdateUserCommand(
       id,
       updateUserDto.name,

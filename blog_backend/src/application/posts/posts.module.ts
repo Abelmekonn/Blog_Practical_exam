@@ -17,7 +17,7 @@ import { GetPostsHandler } from './queries/get-posts.handler';
     CreatePostHandler,
     UpdatePostHandler,
     DeletePostHandler,
-    
+
     // Query Handlers
     GetPostHandler,
     GetPostsHandler,

@@ -18,6 +18,11 @@ export interface RegisterRequest {
   password: string;
 }
 
+export interface UpdateProfileRequest {
+  name?: string;
+  email?: string;
+}
+
 export interface AuthResponse {
   user: User;
   accessToken: string;
