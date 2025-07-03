@@ -21,23 +21,13 @@ const initialState: PostState = {
   },
 };
 
-// Async thunks using feature API
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (params: PaginationParams | undefined, { rejectWithValue }) => {
     try {
-      console.log("🚀 Fetching posts with params:", params);
       const response = await postsApi.getAllPosts(params);
-      console.log("✅ Posts fetched successfully:", response);
-      console.log("📊 Pagination info:", {
-        total: response.total,
-        page: response.page,
-        limit: response.limit,
-        totalPages: response.totalPages,
-      });
       return response;
     } catch (error) {
-      console.error("❌ Failed to fetch posts:", error);
       return rejectWithValue(
         error instanceof Error ? error.message : "Failed to fetch posts"
       );
@@ -119,7 +109,6 @@ const postsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Fetch Posts
     builder
       .addCase(fetchPosts.pending, (state) => {
         state.loading = true;
@@ -140,7 +129,6 @@ const postsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Fetch Post By ID
     builder
       .addCase(fetchPostById.pending, (state) => {
         state.loading = true;
@@ -155,7 +143,6 @@ const postsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Create Post
     builder
       .addCase(createPost.pending, (state) => {
         state.loading = true;
@@ -170,7 +157,6 @@ const postsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Update Post
     builder
       .addCase(updatePost.pending, (state) => {
         state.loading = true;
@@ -193,7 +179,6 @@ const postsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Delete Post
     builder
       .addCase(deletePost.pending, (state) => {
         state.loading = true;

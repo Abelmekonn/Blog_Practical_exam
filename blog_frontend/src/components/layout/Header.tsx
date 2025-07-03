@@ -1,14 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import ThemeToggle from '../common/ThemeToggle';
-import SearchInput from '../common/SearchInput';
 import { useAuth } from '../../features/auth/hooks/useAuth';
-import { usePosts } from '../../features/posts/hooks/usePosts';
 
 const Header: React.FC = () => {
     const { user, isAuthenticated, logout } = useAuth();
-    const { loadPosts } = usePosts();
-    const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
     const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -29,8 +25,7 @@ const Header: React.FC = () => {
         try {
             await logout();
             setIsProfileMenuOpen(false);
-            navigate('/');
-        } catch (error) {
+        } catch (error) {   
             console.error('Logout failed:', error);
         }
     };
@@ -41,12 +36,6 @@ const Header: React.FC = () => {
 
     const closeMobileMenu = () => {
         setIsMobileMenuOpen(false);
-    };
-
-    const handleSearch = (query: string) => {
-        // Navigate to home page with search results
-        navigate('/');
-        loadPosts({ page: 1, limit: 10, search: query });
     };
 
     return (
@@ -96,15 +85,6 @@ const Header: React.FC = () => {
 
                     {/* Right side actions */}
                     <div className="flex items-center space-x-4">
-                        {/* Search Input - Hidden on mobile */}
-                        <div className="hidden lg:block">
-                            <SearchInput
-                                onSearch={handleSearch}
-                                placeholder="Search posts..."
-                                variant="header"
-                                debounceDelay={500}
-                            />
-                        </div>
                         
                         <ThemeToggle />
 

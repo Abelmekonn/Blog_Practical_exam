@@ -2,7 +2,7 @@ import Layout from "../components/layout/Layout"
 import HeroSection from "@/components/sections/HeroSection";
 import FeaturedSection from "@/components/sections/FeaturedSection";
 import LatestPostsSection from "@/components/sections/LatestPostsSection";
-import { SEO } from "../components/common";
+import { SEO, BlogCard } from "../components/common";
 import { usePosts } from "../features/posts/hooks/usePosts";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -148,6 +148,38 @@ const Home = () => {
                     onSearch={handleSearch}
                     blogStats={blogStats}
                 />
+                
+                {/* Search Results Section - Only shows when searching */}
+                {searchQuery && transformedPosts.length > 0 && (
+                    <section className="py-16 bg-gray-50 dark:bg-gray-900">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-t-gray-700 dark:border-t-gray-400 py-4 ">
+                            <div className=" mb-12">
+                                <h2 className="text-3xl md:text-5xl leading-tight font-[400] text-gray-900 dark:text-white mb-4 font-instrument ">
+                                    Search Results
+                                </h2>
+                                <p className="text-lg text-gray-600 dark:text-gray-300">
+                                    Found {transformedPosts.length} post{transformedPosts.length > 1 ? "s" : ""} matching <span className="font-[500] font-inter text-3xl">"{searchQuery}"</span>
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {transformedPosts.map((post) => (
+                                    <div key={post.id} className="cursor-pointer transform hover:scale-105 transition-transform duration-300">
+                                        <BlogCard
+                                            id={post.id}
+                                            title={post.title}
+                                            description={post.description}
+                                            image={post.image}
+                                            createdDay={post.createdDay}
+                                            onPostClick={handleCardClick}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                
 
                 {/* Featured Posts Section - Always shows original posts */}
                 {featuredPosts.length > 0 && (
@@ -157,36 +189,19 @@ const Home = () => {
                     />
                 )}
 
-                {/* Search Results Header */}
-                {searchQuery && (
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
-                                Search Results for "{searchQuery}"
-                            </h3>
-                            <p className="text-sm text-blue-700 dark:text-blue-300">
-                                Found {transformedPosts.length} result(s)
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Latest Posts Section - Shows search results when searching, original posts otherwise */}
-                {transformedPosts.length > 0 && (
+                {/* Latest Posts Section - Always shows original posts (not search results) */}
+                {posts && posts.length > 0 && (
                     <LatestPostsSection
-                        posts={transformedPosts}
+                        posts={posts.map(transformApiPostToSectionPost).filter((post): post is Post => post !== null)}
                         onPostClick={handleCardClick}
                     />
                 )}
 
-                {/* Show message if no posts or no search results */}
-                {transformedPosts.length === 0 && !loading && (
+                {/* Show message if no posts available when not searching */}
+                {(!posts || posts.length === 0) && !loading && (
                     <div className="text-center py-12">
-                        <p className="text-lg text-gray-600">
-                            {searchQuery 
-                                ? `No posts found for "${searchQuery}". Try a different search term.`
-                                : "No posts available at the moment."
-                            }
+                        <p className="text-lg text-gray-600 dark:text-gray-400">
+                            No posts available at the moment.
                         </p>
                     </div>
                 )}

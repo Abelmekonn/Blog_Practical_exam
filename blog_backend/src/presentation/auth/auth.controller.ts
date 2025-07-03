@@ -14,7 +14,6 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
   ApiBody,
   ApiUnauthorizedResponse,
@@ -130,8 +129,32 @@ export class AuthController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
+  getProfile(@Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...user } = req.user;
     return user;
+  }
+
+  @ApiOperation({
+    summary: 'User logout',
+    description: 'Logout user (client should remove token)',
+  })
+  @ApiOkResponse({
+    description: 'Logout successful',
+    schema: {
+      example: {
+        message: 'Logout successful',
+      },
+    },
+  })
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  logout() {
+    // In JWT-based auth, logout is typically handled client-side
+    // by removing the token. This endpoint is for consistency.
+    return {
+      message: 'Logout successful',
+    };
   }
 }
